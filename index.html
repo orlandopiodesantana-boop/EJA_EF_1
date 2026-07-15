@@ -9,276 +9,69 @@
 body{
     font-family: Arial, sans-serif;
     background:#f4f4f4;
-    margin:0;
-    padding:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
-.container{
-    max-width:800px;
-    margin:auto;
+#quiz{
     background:white;
-    padding:25px;
+    padding:20px;
     border-radius:10px;
+    width:500px;
     box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 
 h1{
     text-align:center;
-    color:#2c3e50;
 }
 
-#pergunta{
-    font-size:22px;
-    margin-bottom:20px;
-}
-
-.alternativa{
+button{
     display:block;
     width:100%;
-    margin:10px 0;
-    padding:12px;
-    font-size:16px;
+    padding:10px;
+    margin:8px 0;
     cursor:pointer;
-    border:1px solid #ccc;
-    border-radius:6px;
-    background:#fafafa;
+    border:none;
+    border-radius:5px;
+    background:#3498db;
+    color:white;
+    font-size:16px;
 }
 
-.alternativa:hover{
-    background:#e8f4ff;
+button:hover{
+    background:#2980b9;
 }
 
-#feedback{
+#resultado{
     margin-top:15px;
     font-weight:bold;
-    font-size:18px;
 }
 
-#proximo{
-    margin-top:20px;
-    padding:10px 20px;
-    display:none;
-    cursor:pointer;
-}
-
-#placar{
-    margin-bottom:20px;
-    font-weight:bold;
-}
-
-.resultado{
-    text-align:center;
+#reiniciar{
+    background:#27ae60;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-<h1>Quiz de Ciências</h1>
-
-<div id="placar">
-Pergunta <span id="numero">1</span>/10 |
-Acertos: <span id="acertos">0</span>
-</div>
-
 <div id="quiz">
-<div id="pergunta"></div>
-<div id="alternativas"></div>
-<div id="feedback"></div>
-<button id="proximo">Próxima Pergunta</button>
+    <h1>Quiz de Ciências</h1>
+
+    <div id="pergunta"></div>
+
+    <div id="alternativas"></div>
+
+    <div id="resultado"></div>
+
+    <button id="reiniciar" style="display:none;">
+        Reiniciar Quiz
+    </button>
 </div>
 
-</div>
-
-<script>
-
-const perguntas = [
-
-{
-pergunta:"Qual é o planeta conhecido como Planeta Vermelho?",
-alternativas:["Terra","Marte","Júpiter","Saturno"],
-correta:1
-},
-{
-pergunta:"Qual gás é essencial para a respiração humana?",
-alternativas:["Nitrogênio","Oxigênio","Hidrogênio","Hélio"],
-correta:1
-},
-{
-pergunta:"Qual órgão bombeia sangue para todo o corpo?",
-alternativas:["Pulmão","Fígado","Coração","Rim"],
-correta:2
-},
-{
-pergunta:"A água ferve a aproximadamente:",
-alternativas:["50°C","75°C","100°C","150°C"],
-correta:2
-},
-{
-pergunta:"Qual é o maior planeta do Sistema Solar?",
-alternativas:["Terra","Marte","Júpiter","Urano"],
-correta:2
-},
-{
-pergunta:"Qual é a estrela do Sistema Solar?",
-alternativas:["Lua","Sol","Marte","Vênus"],
-correta:1
-},
-{
-pergunta:"As plantas produzem alimento por meio da:",
-alternativas:["Respiração","Digestão","Fotossíntese","Evaporação"],
-correta:2
-},
-{
-pergunta:"Qual é o satélite natural da Terra?",
-alternativas:["Lua","Sol","Marte","Júpiter"],
-correta:0
-},
-{
-pergunta:"Qual estado físico possui forma e volume definidos?",
-alternativas:["Gasoso","Líquido","Plasma","Sólido"],
-correta:3
-},
-{
-pergunta:"Qual camada da Terra é a mais externa?",
-alternativas:["Núcleo","Manto","Crosta","Magma"],
-correta:2
-},
-{
-pergunta:"Qual animal é um mamífero?",
-alternativas:["Galinha","Sapo","Baleia","Tartaruga"],
-correta:2
-},
-{
-pergunta:"Qual vitamina é produzida pela exposição ao Sol?",
-alternativas:["A","B","C","D"],
-correta:3
-},
-{
-pergunta:"Qual órgão é responsável pela respiração?",
-alternativas:["Pulmão","Coração","Fígado","Estômago"],
-correta:0
-},
-{
-pergunta:"A força que nos mantém presos ao solo chama-se:",
-alternativas:["Magnetismo","Gravidade","Atrito","Pressão"],
-correta:1
-},
-{
-pergunta:"Qual destes é um vertebrado?",
-alternativas:["Minhoca","Água-viva","Aranha","Peixe"],
-correta:3
-},
-{
-pergunta:"Qual planeta é conhecido pelos anéis?",
-alternativas:["Saturno","Mercúrio","Marte","Vênus"],
-correta:0
-},
-{
-pergunta:"O sangue circula através de:",
-alternativas:["Ossos","Vasos sanguíneos","Músculos","Pele"],
-correta:1
-},
-{
-pergunta:"Qual é a principal fonte de energia da Terra?",
-alternativas:["Lua","Vento","Sol","Marte"],
-correta:2
-},
-{
-pergunta:"Qual destes é um ser vivo?",
-alternativas:["Pedra","Água","Árvore","Areia"],
-correta:2
-},
-{
-pergunta:"O processo de passagem da água líquida para vapor chama-se:",
-alternativas:["Condensação","Evaporação","Solidificação","Fusão"],
-correta:1
-}
-
-];
-
-let sorteadas = [];
-let indice = 0;
-let acertos = 0;
-
-function embaralhar(array){
-    return array.sort(() => Math.random() - 0.5);
-}
-
-sorteadas = embaralhar([...perguntas]).slice(0,10);
-
-function carregarPergunta(){
-
-    document.getElementById("numero").textContent = indice + 1;
-
-    let p = sorteadas[indice];
-
-    document.getElementById("pergunta").textContent = p.pergunta;
-
-    let html = "";
-
-    p.alternativas.forEach((alt,i)=>{
-        html += `<button class="alternativa" onclick="responder(${i})">${alt}</button>`;
-    });
-
-    document.getElementById("alternativas").innerHTML = html;
-    document.getElementById("feedback").innerHTML = "";
-    document.getElementById("proximo").style.display = "none";
-}
-
-function responder(opcao){
-
-    let p = sorteadas[indice];
-
-    let botoes = document.querySelectorAll(".alternativa");
-    botoes.forEach(btn => btn.disabled = true);
-
-    if(opcao === p.correta){
-        acertos++;
-        document.getElementById("feedback").innerHTML =
-        "✅ Correto!";
-    }else{
-        document.getElementById("feedback").innerHTML =
-        "❌ Errado! Resposta correta: <b>" +
-        p.alternativas[p.correta] +
-        "</b>";
-    }
-
-    document.getElementById("acertos").textContent = acertos;
-    document.getElementById("proximo").style.display = "inline-block";
-}
-
-document.getElementById("proximo").addEventListener("click",()=>{
-
-    indice++;
-
-    if(indice < 10){
-        carregarPergunta();
-    }else{
-        finalizar();
-    }
-});
-
-function finalizar(){
-
-    let percentual = Math.round((acertos/10)*100);
-
-    document.getElementById("quiz").innerHTML = `
-    <div class="resultado">
-        <h2>Quiz Finalizado!</h2>
-        <h3>Acertos: ${acertos} de 10</h3>
-        <h3>Aproveitamento: ${percentual}%</h3>
-        <button onclick="location.reload()">
-            Jogar Novamente
-        </button>
-    </div>
-    `;
-}
-
-carregarPergunta();
-
-</script>
+<script src="perguntas.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
